@@ -14,31 +14,6 @@ jobs:
       py: /opt/python/${{ matrix.pyver }}/bin/python
       img: quay.io/pypa/manylinux2014_aarch64
     steps:
-      - name: Cache Connector
-        id: cache-connector
-        uses: actions/cache@v1
-        with:
-          path: ~/mariadb-connector
-          key: mariadb-connector-python-${{ env.CONNECTOR_VERSION }}-win
-
-      - name: Download and Unzip Connector
-        if: steps.cache-connector.outputs.cache-hit != 'true'
-        shell: bash
-        run: |
-          curl -LO "https://downloads.mariadb.com/Connectors/c/connector-c-${CONNECTOR_VERSION}/mariadb-connector-c-${CONNECTOR_VERSION}-src.zip"
-          unzip "mariadb-connector-c-${CONNECTOR_VERSION}-src.zip" -d /home/runner/work/
-          mv "/home/runner/work/mariadb-connector-c-${CONNECTOR_VERSION}-src" /home/runner/work/mariadb-connector-src       
-          
-      - name: Build Connector
-        if: steps.cache-connector.outputs.cache-hit != 'true'
-        shell: bash
-        working-directory: /home/runner/work/mariadb-connector-src
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DCLIENT_PLUGIN_DIALOG=static -DCLIENT_PLUGIN_SHA256_PASSWORD=static -DCLIENT_PLUGIN_CACHING_SHA2_PASSWORD=static
-          cmake --build . -j 8 --config Release
-          cmake -DCMAKE_INSTALL_PREFIX=/home/runner/work/mariadb-connector -DCMAKE_INSTALL_COMPONENT=Development -DCMAKE_BUILD_TYPE=Release -P cmake_install.cmake    
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set up QEMU
@@ -53,7 +28,6 @@ jobs:
               pip install -U setuptools wheel pip && \
               yum install -y epel-release && \
               yum-config-manager --enable epel && \
-              #yum install mysql-community-server && \
               yum install -y mariadb-devel && \
               python setup.py bdist_wheel && \
               deactivate'
@@ -61,4 +35,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: linux-wheels
-          path: mysqlclient/dist/*.whl
+          path: dist/*.whl
