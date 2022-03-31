@@ -34,7 +34,7 @@ jobs:
       - name: Build Connector
         if: steps.cache-connector.outputs.cache-hit != 'true'
         shell: bash
-        working-directory: ~/mariadb-connector-src
+        working-directory: /home/runner/work/mariadb-connector-src
         run: |
           mkdir build
           cd build
