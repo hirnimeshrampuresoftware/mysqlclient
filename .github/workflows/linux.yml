@@ -33,6 +33,7 @@ jobs:
               #yum-config-manager --enable epel && \
               yum install -y mariadb-devel && \
               python setup.py bdist_wheel && \
+              auditwheel repair -w dist/*.whl && \
               deactivate'
       - name: Upload Wheel
         uses: actions/upload-artifact@v2
