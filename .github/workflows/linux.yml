@@ -28,9 +28,7 @@ jobs:
           curl -LO "https://downloads.mariadb.com/Connectors/c/connector-c-${CONNECTOR_VERSION}/mariadb-connector-c-${CONNECTOR_VERSION}-src.zip"
           unzip "mariadb-connector-c-${CONNECTOR_VERSION}-src.zip" -d /home/runner/work/
           mv "/home/runner/work/mariadb-connector-c-${CONNECTOR_VERSION}-src" /home/runner/work/mariadb-connector-src       
-  #        curl -LO "https://downloads.mariadb.com/Connectors/python/connector-python-1.1.1/mariadb-connector-python-1.1.1.zip"
- #         unzip "mariadb-connector-python-${CONNECTOR_VERSION}.zip" -d /home/runner/work/
-#          mv "/home/runner/work/mariadb-connector-python-${CONNECTOR_VERSION}" /home/runner/work/mariadb-connector-src
+          
       - name: Build Connector
         if: steps.cache-connector.outputs.cache-hit != 'true'
         shell: bash
@@ -38,7 +36,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -A aarch64 .. -DCMAKE_BUILD_TYPE=Release -DCLIENT_PLUGIN_DIALOG=static -DCLIENT_PLUGIN_SHA256_PASSWORD=static -DCLIENT_PLUGIN_CACHING_SHA2_PASSWORD=static
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCLIENT_PLUGIN_DIALOG=static -DCLIENT_PLUGIN_SHA256_PASSWORD=static -DCLIENT_PLUGIN_CACHING_SHA2_PASSWORD=static
           cmake --build . -j 8 --config Release
           cmake -DCMAKE_INSTALL_PREFIX=~/mariadb-connector -DCMAKE_INSTALL_COMPONENT=Development -DCMAKE_BUILD_TYPE=Release -P cmake_install.cmake    
       - name: Checkout
