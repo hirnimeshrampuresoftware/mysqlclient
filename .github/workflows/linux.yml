@@ -1,6 +1,10 @@
 name: Build linux wheels
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
 
 jobs:
   build:
@@ -10,7 +14,6 @@ jobs:
         pyver: [cp37-cp37m, cp38-cp38, cp39-cp39, cp310-cp310]
       fail-fast: false
     env:
-      CONNECTOR_VERSION: "3.2.4"    
       py: /opt/python/${{ matrix.pyver }}/bin/python
       img: quay.io/pypa/manylinux2014_aarch64
     steps:
