@@ -54,7 +54,7 @@ jobs:
               yum install -y epel-release && \
               yum-config-manager --enable epel && \
               #yum install mysql-community-server && \
-              yum install mariadb-devel && \
+              yum install -y mariadb-devel && \
               python setup.py bdist_wheel && \
               deactivate'
       - name: Upload Wheel
