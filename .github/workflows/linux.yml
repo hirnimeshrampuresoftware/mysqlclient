@@ -13,22 +13,46 @@ jobs:
       py: /opt/python/${{ matrix.pyver }}/bin/python
       img: quay.io/pypa/manylinux2014_aarch64
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Set up QEMU
-      id: qemu
-      uses: docker/setup-qemu-action@v1
-    - name: Build Wheel
-      run: |
-            docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
-            ${{ env.img }} \
-            bash -exc '${{ env.py }} -m venv .env && \
-            source .env/bin/activate && \
-            pip install -U setuptools wheel pip && \
-            python setup.py bdist_wheel && \
-            deactivate'
-    - name: Upload Wheel
-      uses: actions/upload-artifact@v2
-      with:
-        name: linux-wheels
-        path: mysqlclient/dist/*.whl
+      - name: Cache Connector
+        id: cache-connector
+        uses: actions/cache@v1
+        with:
+          path: c:/mariadb-connector
+          key: mariadb-connector-c-${{ env.CONNECTOR_VERSION }}-win
+
+      - name: Download and Unzip Connector
+        if: steps.cache-connector.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          curl -LO "https://downloads.mariadb.com/Connectors/c/connector-c-${CONNECTOR_VERSION}/mariadb-connector-c-${CONNECTOR_VERSION}-src.zip"
+          unzip "mariadb-connector-c-${CONNECTOR_VERSION}-src.zip" -d c:/
+          mv "c:/mariadb-connector-c-${CONNECTOR_VERSION}-src" c:/mariadb-connector-src
+      - name: Build Connector
+        if: steps.cache-connector.outputs.cache-hit != 'true'
+        shell: bash
+        working-directory: c:/mariadb-connector-src
+        run: |
+          mkdir build
+          cd build
+          cmake -A x64 .. -DCMAKE_BUILD_TYPE=Release -DCLIENT_PLUGIN_DIALOG=static -DCLIENT_PLUGIN_SHA256_PASSWORD=static -DCLIENT_PLUGIN_CACHING_SHA2_PASSWORD=static
+          cmake --build . -j 8 --config Release
+          cmake -DCMAKE_INSTALL_PREFIX=c:/mariadb-connector -DCMAKE_INSTALL_COMPONENT=Development -DCMAKE_BUILD_TYPE=Release -P cmake_install.cmake    
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+      - name: Build Wheel
+        run: |
+              docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+              ${{ env.img }} \
+              bash -exc '${{ env.py }} -m venv .env && \
+              source .env/bin/activate && \
+              pip install -U setuptools wheel pip && \
+              python setup.py bdist_wheel && \
+              deactivate'
+      - name: Upload Wheel
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-wheels
+          path: mysqlclient/dist/*.whl
