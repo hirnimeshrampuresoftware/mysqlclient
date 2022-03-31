@@ -25,12 +25,12 @@ jobs:
         if: steps.cache-connector.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          curl -LO "https://downloads.mariadb.com/Connectors/python/connector-python-1.1.1/mariadb-connector-python-1.1.1.zip"
-          unzip "mariadb-connector-python-${CONNECTOR_VERSION}.zip" -d /home/runner/work/
-          pwd
-          ls
-          find . -name "mariadb-connector-python-1.1.1"
-          mv "/home/runner/work/mariadb-connector-python-${CONNECTOR_VERSION}" /home/runner/work/mariadb-connector-src
+          curl -LO "https://downloads.mariadb.com/Connectors/c/connector-c-${CONNECTOR_VERSION}/mariadb-connector-c-${CONNECTOR_VERSION}-src.zip"
+          unzip "mariadb-connector-c-${CONNECTOR_VERSION}-src.zip" -d /home/runner/work/
+          mv "/home/runner/work/mariadb-connector-c-${CONNECTOR_VERSION}-src" /home/runner/work/mariadb-connector-src       
+  #        curl -LO "https://downloads.mariadb.com/Connectors/python/connector-python-1.1.1/mariadb-connector-python-1.1.1.zip"
+ #         unzip "mariadb-connector-python-${CONNECTOR_VERSION}.zip" -d /home/runner/work/
+#          mv "/home/runner/work/mariadb-connector-python-${CONNECTOR_VERSION}" /home/runner/work/mariadb-connector-src
       - name: Build Connector
         if: steps.cache-connector.outputs.cache-hit != 'true'
         shell: bash
