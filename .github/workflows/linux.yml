@@ -26,8 +26,8 @@ jobs:
         shell: bash
         run: |
           curl -LO "https://downloads.mariadb.com/Connectors/python/connector-python-1.1.1/mariadb-connector-python-1.1.1.zip"
-          unzip "mariadb-connector-python-${CONNECTOR_VERSION}-src.zip" -d ~/
-          mv "c:/mariadb-connector-python-${CONNECTOR_VERSION}-src" ~/mariadb-connector-src
+          unzip "mariadb-connector-python-${CONNECTOR_VERSION}.zip" -d ~/
+          mv "~/mariadb-connector-python-${CONNECTOR_VERSION}" ~/mariadb-connector-src
       - name: Build Connector
         if: steps.cache-connector.outputs.cache-hit != 'true'
         shell: bash
